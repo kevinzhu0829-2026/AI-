@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 工具大全</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --card-bg: #ffffff;
+    --text: #1a1a1a;
+    --text-soft: #6b6b6b;
+    --line: #e8e8e8;
+    --accent: #5b5bd6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 40px 16px;
+  }
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .page-title {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .page-sub {
+    color: var(--text-soft);
+    font-size: 14px;
+    margin-bottom: 40px;
+  }
+  .category {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .cat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .cat-title {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .cat-num {
+    color: var(--accent);
+    font-weight: 700;
+    margin-right: 6px;
+  }
+  .copy-btn {
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--text-soft);
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+  }
+  .copy-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .copy-btn.copied {
+    border-color: #2e9e5b;
+    color: #2e9e5b;
+  }
+  .tool-item {
+    border-bottom: 1px solid var(--line);
+  }
+  .tool-item:last-child {
+    border-bottom: none;
+  }
+  .tool-row {
+    display: grid;
+    grid-template-columns: 24px 28px 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    cursor: pointer;
+    user-select: none;
+  }
+  .tool-logo {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    object-fit: contain;
+    background: #f0f0f0;
+    flex-shrink: 0;
+  }
+  .rank {
+    color: var(--text-soft);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .tool-name {
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .tool-desc {
+    color: var(--text-soft);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  .tool-link {
+    color: var(--accent);
+    font-size: 13px;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .tool-link:hover {
+    text-decoration: underline;
+  }
+  .chevron {
+    color: var(--text-soft);
+    font-size: 12px;
+    transition: transform 0.2s ease;
+    width: 14px;
+    text-align: center;
+  }
+  .tool-item.open .chevron {
+    transform: rotate(90deg);
+    color: var(--accent);
+  }
+  .tool-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease, opacity 0.2s ease;
+    opacity: 0;
+  }
+  .tool-item.open .tool-detail {
+    opacity: 1;
+  }
+  .tool-detail-inner {
+    padding: 0 0 16px 36px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    border-left: 2px solid var(--line);
+    margin-left: 0;
+  }
+  .tool-detail-inner .detail-label {
+    color: var(--text-soft);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-top: 8px;
+    margin-bottom: 4px;
+  }
+  .tool-detail-inner .detail-label:first-child {
+    margin-top: 0;
+  }
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1a1a1a;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s ease;
+    z-index: 100;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  @media (max-width: 480px) {
+    .tool-row {
+      grid-template-columns: 18px 22px 1fr auto;
+      grid-template-areas:
+        "rank logo name chevron"
+        ". . link link";
+    }
+    .tool-row .rank { grid-area: rank; }
+    .tool-logo { grid-area: logo; width: 20px; height: 20px; }
+    .tool-row > div:nth-child(3) { grid-area: name; }
+    .tool-link { grid-area: link; font-size: 12px; margin-top: 4px; }
+    .chevron { grid-area: chevron; }
+    .tool-detail-inner { padding-left: 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-title">AI 工具大全</div>
+  <div class="page-sub">点击工具行查看详细介绍，点击网址可复制，点击右上角按钮可复制整个分类</div>
+
+  <!-- 一 -->
+  <div class="category" id="cat-1">
+    <div class="cat-header">
+      <div class="cat-title"><span class="cat-num">一</span>综合性 AI 助手（对话/搜索/写作）</div>
+      <button class="copy-btn" data-cat="1">复制本类</button>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">1</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=chat.openai.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">ChatGPT</div><div class="tool-desc">对话、写作、编程、生图(DALL·E)</div></div>
+        <span class="tool-link" data-url="chat.openai.com">chat.openai.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>OpenAI</div>
+          <div class="detail-label">核心特点</div><div>通用对话模型，支持插件、自定义GPT、代码解释器、图像生成与浏览，生态最丰富</div>
+          <div class="detail-label">适合场景</div><div>日常问答、写作辅助、编程调试、创意头脑风暴</div>
+          <div class="detail-label">价格模式</div><div>免费版可用；Plus 订阅解锁更强模型与更多功能</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">2</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=gemini.google.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Gemini</div><div class="tool-desc">对话、搜索、多模态分析</div></div>
+        <span class="tool-link" data-url="gemini.google.com">gemini.google.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Google</div>
+          <div class="detail-label">核心特点</div><div>深度集成 Google 搜索与生态（Gmail、文档、地图），擅长多模态（图文音视频）理解</div>
+          <div class="detail-label">适合场景</div><div>信息检索、Google 办公套件联动、多模态分析</div>
+          <div class="detail-label">价格模式</div><div>基础版免费；Advanced 订阅解锁更高级模型与更大上下文</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">3</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Claude</div><div class="tool-desc">长文本、深度推理、安全对齐</div></div>
+        <span class="tool-link" data-url="claude.ai">claude.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Anthropic</div>
+          <div class="detail-label">核心特点</div><div>超长上下文窗口，长文档理解与复杂推理能力强，注重安全与可控性</div>
+          <div class="detail-label">适合场景</div><div>长文档分析、复杂逻辑推理、代码生成、内容创作</div>
+          <div class="detail-label">价格模式</div><div>免费版可用；Pro/Team 订阅提供更高使用额度</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">4</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=perplexity.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Perplexity</div><div class="tool-desc">AI 搜索引擎</div></div>
+        <span class="tool-link" data-url="perplexity.ai">perplexity.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Perplexity AI</div>
+          <div class="detail-label">核心特点</div><div>基于实时网络检索回答问题并附带引用来源，结果可追溯、可验证</div>
+          <div class="detail-label">适合场景</div><div>实时资讯查询、学术研究、带引用的事实核查</div>
+          <div class="detail-label">价格模式</div><div>免费版可用；Pro 订阅提供更多搜索次数与高级模型</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">5</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=copilot.microsoft.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Copilot</div><div class="tool-desc">对话、写作、办公集成</div></div>
+        <span class="tool-link" data-url="copilot.microsoft.com">copilot.microsoft.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Microsoft</div>
+          <div class="detail-label">核心特点</div><div>深度集成 Windows 与 Office 全家桶（Word/Excel/PPT/Outlook），办公场景体验流畅</div>
+          <div class="detail-label">适合场景</div><div>办公文档处理、企业级协作、Windows系统内嵌助手</div>
+          <div class="detail-label">价格模式</div><div>网页版免费；Microsoft 365 Copilot 需企业订阅</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">6</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=doubao.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">豆包</div><div class="tool-desc">字节跳动出品，语音交互见长</div></div>
+        <span class="tool-link" data-url="doubao.com">doubao.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>字节跳动</div>
+          <div class="detail-label">核心特点</div><div>语音交互体验流畅，多模态对话与AI智能体生态丰富，国内月活领先</div>
+          <div class="detail-label">适合场景</div><div>日常对话、语音助手、多模态任务处理</div>
+          <div class="detail-label">价格模式</div><div>免费使用；部分高级功能与会员服务付费</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">7</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=tongyi.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">通义</div><div class="tool-desc">原通义千问，阿里生态深度集成</div></div>
+        <span class="tool-link" data-url="tongyi.com">tongyi.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>阿里巴巴</div>
+          <div class="detail-label">核心特点</div><div>多模态（图文音）理解能力强，与淘宝、钉钉、阿里云等生态深度打通</div>
+          <div class="detail-label">适合场景</div><div>电商场景应用、企业级多模态分析、阿里系产品联动</div>
+          <div class="detail-label">价格模式</div><div>免费使用；企业API按量计费</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">8</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=yiyan.baidu.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">文心一言</div><div class="tool-desc">百度大模型，搜索生态联动</div></div>
+        <span class="tool-link" data-url="yiyan.baidu.com">yiyan.baidu.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>百度</div>
+          <div class="detail-label">核心特点</div><div>深度整合百度搜索、文库、网盘，中文语义理解积累深厚</div>
+          <div class="detail-label">适合场景</div><div>百度生态用户的搜索增强、文档与资料处理</div>
+          <div class="detail-label">价格模式</div><div>免费使用</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">9</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=kimi.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Kimi</div><div class="tool-desc">超长上下文，长文档解读</div></div>
+        <span class="tool-link" data-url="kimi.com">kimi.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>月之暗面 Moonshot AI</div>
+          <div class="detail-label">核心特点</div><div>超长上下文处理能力突出，擅长长文档总结、多文件联合分析</div>
+          <div class="detail-label">适合场景</div><div>长文档/论文阅读、资料整理与归纳</div>
+          <div class="detail-label">价格模式</div><div>免费使用；高级版按订阅提供更高额度</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">10</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=chat.deepseek.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">DeepSeek</div><div class="tool-desc">开源推理与代码能力强</div></div>
+        <span class="tool-link" data-url="chat.deepseek.com">chat.deepseek.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>深度求索</div>
+          <div class="detail-label">核心特点</div><div>开源模型生态成熟，推理与代码能力强，全球访问量位居前列</div>
+          <div class="detail-label">适合场景</div><div>编程辅助、复杂推理、本地化私有部署</div>
+          <div class="detail-label">价格模式</div><div>网页版免费；开源模型可自行部署</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">11</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=yuanbao.tencent.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">元宝</div><div class="tool-desc">腾讯出品，微信生态联动</div></div>
+        <span class="tool-link" data-url="yuanbao.tencent.com">yuanbao.tencent.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>腾讯</div>
+          <div class="detail-label">核心特点</div><div>深度接入微信生态，可处理微信收藏文章与聊天记录总结</div>
+          <div class="detail-label">适合场景</div><div>微信重度用户的内容整理、公众号创作辅助</div>
+          <div class="detail-label">价格模式</div><div>免费使用</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二 -->
+  <div class="category" id="cat-2">
+    <div class="cat-header">
+      <div class="cat-title"><span class="cat-num">二</span>AI 图片生成（文生图/编辑）</div>
+      <button class="copy-btn" data-cat="2">复制本类</button>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">1</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=midjourney.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Midjourney</div><div class="tool-desc">艺术级文生图</div></div>
+        <span class="tool-link" data-url="midjourney.com">midjourney.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Midjourney Inc.</div>
+          <div class="detail-label">核心特点</div><div>以艺术质感与美学风格著称，渲染质量极高，社区氛围浓厚</div>
+          <div class="detail-label">适合场景</div><div>概念艺术、插画、海报设计、风格化视觉创作</div>
+          <div class="detail-label">价格模式</div><div>无免费试用；按月订阅，分基础/标准/专业等档位</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">2</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=leonardo.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Leonardo AI</div><div class="tool-desc">游戏/设计风格图像</div></div>
+        <span class="tool-link" data-url="leonardo.ai">leonardo.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Leonardo AI</div>
+          <div class="detail-label">核心特点</div><div>提供大量预训练风格模型与精细化控制工具，适合游戏素材与角色设计</div>
+          <div class="detail-label">适合场景</div><div>游戏资产、角色概念图、产品设计图</div>
+          <div class="detail-label">价格模式</div><div>提供每日免费额度；订阅解锁更多生成量与模型</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">3</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=firefly.adobe.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Adobe Firefly</div><div class="tool-desc">图片生成+编辑</div></div>
+        <span class="tool-link" data-url="firefly.adobe.com">firefly.adobe.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Adobe</div>
+          <div class="detail-label">核心特点</div><div>与 Photoshop/Illustrator 等深度集成，生成内容商用授权清晰，支持生成填充、扩图等编辑功能</div>
+          <div class="detail-label">适合场景</div><div>商业设计、广告素材、与 Adobe 工作流结合的图像编辑</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；包含在部分 Creative Cloud 订阅中</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">4</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=ideogram.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Ideogram</div><div class="tool-desc">文字排版+图片生成</div></div>
+        <span class="tool-link" data-url="ideogram.ai">ideogram.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Ideogram AI</div>
+          <div class="detail-label">核心特点</div><div>在图像中渲染清晰文字的能力突出，适合带文案的视觉设计</div>
+          <div class="detail-label">适合场景</div><div>海报、Logo、含文字的社交媒体配图</div>
+          <div class="detail-label">价格模式</div><div>免费版可用；订阅提供更高分辨率与生成数量</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">5</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=playground.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Playground AI</div><div class="tool-desc">混合编辑+生图</div></div>
+        <span class="tool-link" data-url="playground.com">playground.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Playground AI</div>
+          <div class="detail-label">核心特点</div><div>内置画板式编辑器，支持图层操作、局部重绘与多模型切换</div>
+          <div class="detail-label">适合场景</div><div>图像精修、创意合成、设计草图迭代</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅解锁高级编辑与更多模型</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">6</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=dreamstudio.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Stable Diffusion</div><div class="tool-desc">开源底座，高度可定制</div></div>
+        <span class="tool-link" data-url="dreamstudio.ai">dreamstudio.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Stability AI</div>
+          <div class="detail-label">核心特点</div><div>开源模型生态庞大，可本地部署与自定义训练，社区风格模型丰富</div>
+          <div class="detail-label">适合场景</div><div>本地化部署、自定义风格训练、开发者集成</div>
+          <div class="detail-label">价格模式</div><div>开源免费；云端服务按生成量计费</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">7</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=blackforestlabs.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Flux</div><div class="tool-desc">高质量写实图像生成</div></div>
+        <span class="tool-link" data-url="blackforestlabs.ai">blackforestlabs.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Black Forest Labs</div>
+          <div class="detail-label">核心特点</div><div>由Stable Diffusion原班团队打造，图像质感与细节表现接近顶尖商业模型</div>
+          <div class="detail-label">适合场景</div><div>高质量写实图像生成、专业设计素材</div>
+          <div class="detail-label">价格模式</div><div>开源版免费；Pro版按API用量计费</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">8</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=gaoding.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">稿定AI</div><div class="tool-desc">国产在线设计平台</div></div>
+        <span class="tool-link" data-url="gaoding.com">gaoding.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>稿定科技</div>
+          <div class="detail-label">核心特点</div><div>集成AI绘画、文案生成、海报模板等一站式设计能力，操作简单</div>
+          <div class="detail-label">适合场景</div><div>电商海报、社交媒体配图、品牌物料设计</div>
+          <div class="detail-label">价格模式</div><div>免费版可用；会员订阅解锁更多素材与模板</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三 -->
+  <div class="category" id="cat-3">
+    <div class="cat-header">
+      <div class="cat-title"><span class="cat-num">三</span>AI 视频生成</div>
+      <button class="copy-btn" data-cat="3">复制本类</button>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">1</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=jimeng.jianying.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">即梦</div><div class="tool-desc">文/图生视频，国产创作平台</div></div>
+        <span class="tool-link" data-url="jimeng.jianying.com">jimeng.jianying.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>字节跳动</div>
+          <div class="detail-label">核心特点</div><div>一站式AI图片+视频创作平台，支持首尾帧控制、对口型、运镜与速度调节，中文语义理解出色</div>
+          <div class="detail-label">适合场景</div><div>短视频创作、中文提示词创作、社交媒体内容生产</div>
+          <div class="detail-label">价格模式</div><div>提供免费每日积分；订阅解锁更高生成额度与4.0模型</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">2</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=sora.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Sora</div><div class="tool-desc">文生视频（OpenAI）</div></div>
+        <span class="tool-link" data-url="sora.com">sora.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>OpenAI</div>
+          <div class="detail-label">核心特点</div><div>可根据文字描述生成高质量、连贯的短视频，画面真实感与运动一致性较强</div>
+          <div class="detail-label">适合场景</div><div>创意短片、广告概念片、社交媒体视频素材</div>
+          <div class="detail-label">价格模式</div><div>包含在 ChatGPT 部分订阅计划中，按生成额度限制使用</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">3</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=runwayml.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Runway</div><div class="tool-desc">视频生成+编辑</div></div>
+        <span class="tool-link" data-url="runwayml.com">runwayml.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Runway</div>
+          <div class="detail-label">核心特点</div><div>集视频生成、绿幕抠像、运动跟踪、画面扩展等专业剪辑工具于一体</div>
+          <div class="detail-label">适合场景</div><div>专业视频后期、影视特效预览、内容创作者剪辑</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅按生成时长计费</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">4</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=pika.art" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Pika</div><div class="tool-desc">文/图生视频</div></div>
+        <span class="tool-link" data-url="pika.art">pika.art</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Pika Labs</div>
+          <div class="detail-label">核心特点</div><div>操作简洁，支持文字或图片快速生成短视频，并可对画面进行风格化改写</div>
+          <div class="detail-label">适合场景</div><div>短视频创作、社交媒体内容、快速创意验证</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅解锁更多生成次数与功能</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">5</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=haiper.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Haiper</div><div class="tool-desc">视频生成+重绘</div></div>
+        <span class="tool-link" data-url="haiper.ai">haiper.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Haiper</div>
+          <div class="detail-label">核心特点</div><div>专注视频生成与视频重绘（video-to-video），画面质感细腻</div>
+          <div class="detail-label">适合场景</div><div>创意短视频、风格转换、视频素材再创作</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅提供更多生成时长</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">6</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=klingai.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Kling</div><div class="tool-desc">高时长视频生成</div></div>
+        <span class="tool-link" data-url="klingai.com">klingai.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>快手 Kuaishou</div>
+          <div class="detail-label">核心特点</div><div>支持生成更长时长、高分辨率的视频，物理运动模拟较为自然</div>
+          <div class="detail-label">适合场景</div><div>长片段视频创作、高质量内容生成</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅解锁更长时长与更高分辨率</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">7</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=hailuoai.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">海螺AI</div><div class="tool-desc">国产视频生成，画面质感细腻</div></div>
+        <span class="tool-link" data-url="hailuoai.com">hailuoai.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>MiniMax</div>
+          <div class="detail-label">核心特点</div><div>国产视频生成模型，画面质感与运动表现力出色，支持图生视频</div>
+          <div class="detail-label">适合场景</div><div>短视频创作、营销素材生成</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅解锁更高清晰度与生成数量</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">8</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=vidu.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Vidu</div><div class="tool-desc">多主体一致性，长视频生成</div></div>
+        <span class="tool-link" data-url="vidu.com">vidu.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>生数科技</div>
+          <div class="detail-label">核心特点</div><div>清华系背景，支持多主体一致性生成与较长时长的连续视频创作</div>
+          <div class="detail-label">适合场景</div><div>角色一致性内容、系列化短剧创作</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅按生成量分级计费</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">9</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=lumalabs.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Luma Dream Machine</div><div class="tool-desc">流畅运镜，操作简单</div></div>
+        <span class="tool-link" data-url="lumalabs.ai">lumalabs.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Luma AI</div>
+          <div class="detail-label">核心特点</div><div>视频生成画面流畅自然，运镜效果出色，上手门槛低</div>
+          <div class="detail-label">适合场景</div><div>创意短片、概念视觉化展示</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅解锁更多生成数量</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四 -->
+  <div class="category" id="cat-4">
+    <div class="cat-header">
+      <div class="cat-title"><span class="cat-num">四</span>AI 语音/音乐</div>
+      <button class="copy-btn" data-cat="4">复制本类</button>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">1</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=elevenlabs.io" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">ElevenLabs</div><div class="tool-desc">语音合成+克隆</div></div>
+        <span class="tool-link" data-url="elevenlabs.io">elevenlabs.io</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>ElevenLabs</div>
+          <div class="detail-label">核心特点</div><div>语音合成自然度高，支持声音克隆与多语言配音，API生态成熟</div>
+          <div class="detail-label">适合场景</div><div>有声书、播客配音、视频旁白、声音克隆应用</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅按字符数与功能分级</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">2</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=suno.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Suno</div><div class="tool-desc">AI 音乐生成</div></div>
+        <span class="tool-link" data-url="suno.ai">suno.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Suno</div>
+          <div class="detail-label">核心特点</div><div>输入歌词与风格描述即可生成包含人声与伴奏的完整歌曲</div>
+          <div class="detail-label">适合场景</div><div>原创歌曲创作、配乐制作、音乐灵感探索</div>
+          <div class="detail-label">价格模式</div><div>提供免费每日额度；订阅提供更多生成次数与商用授权</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">3</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=udio.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Udio</div><div class="tool-desc">AI 音乐创作</div></div>
+        <span class="tool-link" data-url="udio.com">udio.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Udio</div>
+          <div class="detail-label">核心特点</div><div>生成的音乐质感细腻，支持多种音乐风格与可编辑的音轨延展</div>
+          <div class="detail-label">适合场景</div><div>音乐创作、风格实验、片段延展创作</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅解锁更高音质与更多生成数</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">4</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=murf.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Murf AI</div><div class="tool-desc">专业配音</div></div>
+        <span class="tool-link" data-url="murf.ai">murf.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Murf AI</div>
+          <div class="detail-label">核心特点</div><div>提供大量专业级AI配音员声音，支持语速、语调精细调整与视频同步</div>
+          <div class="detail-label">适合场景</div><div>企业培训视频、解说配音、演示文稿配音</div>
+          <div class="detail-label">价格模式</div><div>提供免费试用；订阅按使用时长分级</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">5</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=play.ht" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Play.ht</div><div class="tool-desc">超拟人语音合成</div></div>
+        <span class="tool-link" data-url="play.ht">play.ht</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Play.ht</div>
+          <div class="detail-label">核心特点</div><div>语音库丰富、拟真度高，支持API集成与批量生成</div>
+          <div class="detail-label">适合场景</div><div>播客制作、应用内语音播报、自动化配音流程</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅按字符数分级</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">6</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=haimian.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">海绵音乐</div><div class="tool-desc">国产AI音乐生成</div></div>
+        <span class="tool-link" data-url="haimian.com">haimian.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>MiniMax</div>
+          <div class="detail-label">核心特点</div><div>国产AI音乐生成工具，支持中文歌词创作与多种音乐风格</div>
+          <div class="detail-label">适合场景</div><div>中文原创歌曲创作、个性化音乐生成</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅解锁更多生成数量</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">7</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=tiangong.cn" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">天工SkyMusic</div><div class="tool-desc">国产AI音乐平台</div></div>
+        <span class="tool-link" data-url="tiangong.cn">tiangong.cn</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>昆仑万维</div>
+          <div class="detail-label">核心特点</div><div>国产AI音乐生成平台，操作简单，覆盖风格广泛</div>
+          <div class="detail-label">适合场景</div><div>音乐爱好者创作、短视频配乐</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度使用</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">8</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=mubert.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Mubert</div><div class="tool-desc">可商用背景音乐生成</div></div>
+        <span class="tool-link" data-url="mubert.com">mubert.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Mubert</div>
+          <div class="detail-label">核心特点</div><div>专注生成可商用的背景音乐与音效，支持API实时生成</div>
+          <div class="detail-label">适合场景</div><div>视频/游戏/应用背景音乐、版权清晰的素材库</div>
+          <div class="detail-label">价格模式</div><div>提供免费试用；订阅按授权范围分级计费</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 五 -->
+  <div class="category" id="cat-5">
+    <div class="cat-header">
+      <div class="cat-title"><span class="cat-num">五</span>AI 数字人/虚拟人</div>
+      <button class="copy-btn" data-cat="5">复制本类</button>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">1</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=heygen.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">HeyGen</div><div class="tool-desc">数字人视频生成</div></div>
+        <span class="tool-link" data-url="heygen.com">heygen.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>HeyGen</div>
+          <div class="detail-label">核心特点</div><div>提供大量数字人形象与语音模板，支持文本驱动生成口型同步视频</div>
+          <div class="detail-label">适合场景</div><div>营销视频、产品讲解、多语言本地化配音视频</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅按视频时长与分辨率分级</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">2</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=synthesia.io" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Synthesia</div><div class="tool-desc">企业级数字人</div></div>
+        <span class="tool-link" data-url="synthesia.io">synthesia.io</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Synthesia</div>
+          <div class="detail-label">核心特点</div><div>面向企业培训与内部沟通，支持自定义虚拟形象与多语言配音</div>
+          <div class="detail-label">适合场景</div><div>企业培训课程、内部通知视频、多语言企业宣传</div>
+          <div class="detail-label">价格模式</div><div>提供有限免费试用；企业版按团队订阅计费</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">3</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=d-id.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">D-ID</div><div class="tool-desc">照片转数字人说话</div></div>
+        <span class="tool-link" data-url="d-id.com">d-id.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>D-ID</div>
+          <div class="detail-label">核心特点</div><div>可将静态照片转换为带口型动画的说话视频，支持API集成</div>
+          <div class="detail-label">适合场景</div><div>虚拟形象互动、照片动画化、客服与陪伴类应用</div>
+          <div class="detail-label">价格模式</div><div>提供免费试用额度；订阅按生成分钟数分级</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">4</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=colossyan.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Colossyan</div><div class="tool-desc">培训类数字人</div></div>
+        <span class="tool-link" data-url="colossyan.com">colossyan.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Colossyan</div>
+          <div class="detail-label">核心特点</div><div>专注于企业培训场景，提供互动测验、场景模板与多角色对话视频</div>
+          <div class="detail-label">适合场景</div><div>员工培训、合规课程、教学内容制作</div>
+          <div class="detail-label">价格模式</div><div>提供免费试用；订阅按团队与视频额度分级</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">5</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=deepbrain.io" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Deepbrain AI</div><div class="tool-desc">韩国数字人平台</div></div>
+        <span class="tool-link" data-url="deepbrain.io">deepbrain.io</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>DeepBrain AI</div>
+          <div class="detail-label">核心特点</div><div>源自韩国，提供高真实感AI主播与数字人，广泛用于新闻播报与客服</div>
+          <div class="detail-label">适合场景</div><div>新闻播报、企业客服、商业宣传视频</div>
+          <div class="detail-label">价格模式</div><div>提供免费试用；订阅按视频时长与形象数量分级</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">6</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=zenvideo.qq.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">腾讯智影</div><div class="tool-desc">国产数字人+视频剪辑</div></div>
+        <span class="tool-link" data-url="zenvideo.qq.com">zenvideo.qq.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>腾讯</div>
+          <div class="detail-label">核心特点</div><div>提供数字人播报、AI配音、视频剪辑一体化能力，中文场景适配度高</div>
+          <div class="detail-label">适合场景</div><div>企业宣传、新闻播报、中文配音视频制作</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；会员订阅解锁更多功能</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">7</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=guiji.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">硅基智能</div><div class="tool-desc">超写实数字人定制</div></div>
+        <span class="tool-link" data-url="guiji.ai">guiji.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>硅基智能</div>
+          <div class="detail-label">核心特点</div><div>专注超写实数字人形象定制，广泛应用于直播与IP形象打造</div>
+          <div class="detail-label">适合场景</div><div>电商直播、企业专属数字人IP打造</div>
+          <div class="detail-label">价格模式</div><div>提供试用；定制服务需联系商务报价</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 六 -->
+  <div class="category" id="cat-6">
+    <div class="cat-header">
+      <div class="cat-title"><span class="cat-num">六</span>AI 编程辅助</div>
+      <button class="copy-btn" data-cat="6">复制本类</button>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">1</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=github.com/features/copilot" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">GitHub Copilot</div><div class="tool-desc">代码补全</div></div>
+        <span class="tool-link" data-url="github.com/features/copilot">github.com/features/copilot</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>GitHub / Microsoft</div>
+          <div class="detail-label">核心特点</div><div>深度集成主流编辑器（VS Code、JetBrains等），实时代码补全与对话式编程助手</div>
+          <div class="detail-label">适合场景</div><div>日常编码效率提升、代码注释生成、跨语言开发辅助</div>
+          <div class="detail-label">价格模式</div><div>个人版按月订阅；学生与开源维护者可申请免费使用</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">2</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Cursor</div><div class="tool-desc">AI 编辑器</div></div>
+        <span class="tool-link" data-url="cursor.com">cursor.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Anysphere</div>
+          <div class="detail-label">核心特点</div><div>基于 VS Code 二次开发的AI原生编辑器，支持整库级代码理解与多文件编辑</div>
+          <div class="detail-label">适合场景</div><div>大型项目重构、AI辅助全栈开发、代码库问答</div>
+          <div class="detail-label">价格模式</div><div>提供免费版；Pro 订阅解锁更高请求额度与高级模型</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">3</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=codeium.com/windsurf" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Windsurf</div><div class="tool-desc">AI IDE</div></div>
+        <span class="tool-link" data-url="codeium.com/windsurf">codeium.com/windsurf</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Codeium</div>
+          <div class="detail-label">核心特点</div><div>提供"Agentic"协作编程体验，AI可自主执行多步骤编码任务并实时预览</div>
+          <div class="detail-label">适合场景</div><div>自动化开发流程、复杂功能模块构建</div>
+          <div class="detail-label">价格模式</div><div>提供免费版；订阅解锁更多AI操作额度</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">4</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=bolt.new" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Bolt</div><div class="tool-desc">自然语言生成应用</div></div>
+        <span class="tool-link" data-url="bolt.new">bolt.new</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>StackBlitz</div>
+          <div class="detail-label">核心特点</div><div>通过自然语言描述即可在浏览器中生成、运行并部署完整的全栈应用</div>
+          <div class="detail-label">适合场景</div><div>快速原型开发、MVP验证、无需配置环境的网页应用搭建</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；按token用量订阅付费</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">5</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=replit.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Replit</div><div class="tool-desc">在线编程+AI</div></div>
+        <span class="tool-link" data-url="replit.com">replit.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Replit</div>
+          <div class="detail-label">核心特点</div><div>云端IDE集成AI编程助手（Ghostwriter/Agent），支持一键部署与多人协作</div>
+          <div class="detail-label">适合场景</div><div>在线编程教学、快速部署小项目、团队协作开发</div>
+          <div class="detail-label">价格模式</div><div>提供免费版；订阅解锁更强算力与AI额度</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">6</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=v0.dev" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">v0</div><div class="tool-desc">自然语言生成前端组件</div></div>
+        <span class="tool-link" data-url="v0.dev">v0.dev</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Vercel</div>
+          <div class="detail-label">核心特点</div><div>通过自然语言描述直接生成可用的React/UI组件代码，与Next.js生态契合</div>
+          <div class="detail-label">适合场景</div><div>前端UI原型设计、组件库快速生成</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅解锁更多生成次数</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">7</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=trae.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Trae</div><div class="tool-desc">字节跳动出品AI IDE</div></div>
+        <span class="tool-link" data-url="trae.ai">trae.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>字节跳动</div>
+          <div class="detail-label">核心特点</div><div>国产AI原生IDE，支持中文交互与多种主流编程语言，响应速度快</div>
+          <div class="detail-label">适合场景</div><div>国内开发者日常编码、AI协同开发</div>
+          <div class="detail-label">价格模式</div><div>免费使用</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">8</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=tabnine.com" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Tabnine</div><div class="tool-desc">注重隐私的本地化补全</div></div>
+        <span class="tool-link" data-url="tabnine.com">tabnine.com</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Tabnine</div>
+          <div class="detail-label">核心特点</div><div>支持本地化部署与企业私有模型训练，代码隐私保护性强</div>
+          <div class="detail-label">适合场景</div><div>企业级安全合规开发环境、私有代码库训练</div>
+          <div class="detail-label">价格模式</div><div>提供免费版；企业版按席位订阅</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 七 -->
+  <div class="category" id="cat-7">
+    <div class="cat-header">
+      <div class="cat-title"><span class="cat-num">七</span>AI 办公/PPT</div>
+      <button class="copy-btn" data-cat="7">复制本类</button>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">1</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=gamma.app" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Gamma</div><div class="tool-desc">一键生成演示文稿</div></div>
+        <span class="tool-link" data-url="gamma.app">gamma.app</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Gamma</div>
+          <div class="detail-label">核心特点</div><div>输入大纲或文档即可自动生成设计精美的演示文稿、文档与网页</div>
+          <div class="detail-label">适合场景</div><div>快速制作演示文稿、提案文档与简易网页</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅解锁更多生成次数与导出格式</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">2</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=ai.wps.cn" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">WPS灵犀</div><div class="tool-desc">WPS办公全家桶AI助手</div></div>
+        <span class="tool-link" data-url="ai.wps.cn">ai.wps.cn</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>金山办公</div>
+          <div class="detail-label">核心特点</div><div>深度集成WPS文档、表格、PPT，支持一键生成与智能排版</div>
+          <div class="detail-label">适合场景</div><div>WPS用户的办公文档自动化处理</div>
+          <div class="detail-label">价格模式</div><div>集成于WPS会员服务中，部分功能免费</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">3</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=tiangong.cn" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">天工PPT</div><div class="tool-desc">国产AI一键生成PPT</div></div>
+        <span class="tool-link" data-url="tiangong.cn">tiangong.cn</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>昆仑万维</div>
+          <div class="detail-label">核心特点</div><div>输入主题即可自动生成完整PPT大纲、配图与排版</div>
+          <div class="detail-label">适合场景</div><div>快速制作工作汇报、课程演示文稿</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅解锁更多模板与导出</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 八 -->
+  <div class="category" id="cat-8">
+    <div class="cat-header">
+      <div class="cat-title"><span class="cat-num">八</span>AI Agent/自动化</div>
+      <button class="copy-btn" data-cat="8">复制本类</button>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">1</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Manus</div><div class="tool-desc">通用型AI智能体</div></div>
+        <span class="tool-link" data-url="manus.im">manus.im</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Manus AI</div>
+          <div class="detail-label">核心特点</div><div>可自主规划并执行多步骤复杂任务，包括浏览网页、写代码、生成文件</div>
+          <div class="detail-label">适合场景</div><div>复杂任务自动化、研究报告生成、办公流程自动化</div>
+          <div class="detail-label">价格模式</div><div>提供免费试用额度；订阅按算力使用量计费</div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-item">
+      <div class="tool-row" data-toggle>
+        <span class="rank">2</span>
+        <img class="tool-logo" src="https://www.google.com/s2/favicons?sz=64&domain=genspark.ai" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+        <div><div class="tool-name">Genspark</div><div class="tool-desc">多智能体协同任务平台</div></div>
+        <span class="tool-link" data-url="genspark.ai">genspark.ai</span>
+        <span class="chevron">▶</span>
+      </div>
+      <div class="tool-detail">
+        <div class="tool-detail-inner">
+          <div class="detail-label">开发公司</div><div>Genspark</div>
+          <div class="detail-label">核心特点</div><div>集成搜索、写作、生成幻灯片等多种AI智能体，可自动调度完成任务</div>
+          <div class="detail-label">适合场景</div><div>综合性研究与内容生成任务的自动化处理</div>
+          <div class="detail-label">价格模式</div><div>提供免费额度；订阅解锁更多智能体功能与额度</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">已复制</div>
+
+<script>
+  const toast = document.getElementById('toast');
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1500);
+  }
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  }
+
+  // 单个网址复制（阻止触发展开/收起）
+  document.querySelectorAll('.tool-link').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const url = el.getAttribute('data-url');
+      copyText(url).then(() => showToast('已复制：' + url));
+    });
+  });
+
+  // 整类复制（名称+网址+简介，纯文本表格形式）
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = document.getElementById('cat-' + btn.getAttribute('data-cat'));
+      const title = cat.querySelector('.cat-title').textContent.trim();
+      const items = cat.querySelectorAll('.tool-item');
+      let lines = [title, ''];
+      items.forEach(item => {
+        const name = item.querySelector('.tool-name').textContent.trim();
+        const desc = item.querySelector('.tool-desc').textContent.trim();
+        const url = item.querySelector('.tool-link').getAttribute('data-url');
+        lines.push(`${name}\t${url}\t${desc}`);
+      });
+      copyText(lines.join('\n')).then(() => {
+        btn.textContent = '已复制 ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '复制本类';
+          btn.classList.remove('copied');
+        }, 1200);
+      });
+    });
+  });
+
+  // 点击工具行展开/收起详情，点击其他地方自动关闭
+  const allItems = document.querySelectorAll('.tool-item');
+
+  function closeAll(except) {
+    allItems.forEach(item => {
+      if (item !== except) {
+        item.classList.remove('open');
+        const detail = item.querySelector('.tool-detail');
+        detail.style.maxHeight = null;
+      }
+    });
+  }
+
+  allItems.forEach(item => {
+    const row = item.querySelector('[data-toggle]');
+    const detail = item.querySelector('.tool-detail');
+
+    row.addEventListener('click', (e) => {
+      const isOpen = item.classList.contains('open');
+      if (isOpen) {
+        item.classList.remove('open');
+        detail.style.maxHeight = null;
+      } else {
+        closeAll(item);
+        item.classList.add('open');
+        detail.style.maxHeight = detail.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // 点击页面空白处或其他工具时自动收起
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tool-item')) {
+      closeAll(null);
+    }
+  });
+</script>
+</body>
+</html>
